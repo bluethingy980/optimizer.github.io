@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tweak Generator</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        /* Base Colors & Typography */
+        :root {
+            --bg-dark: #111827;
+            --card-dark: #292929;
+            --text-light: #ffffff;
+            --text-secondary: #aaaaaa;
+            --accent-blue: #2563eb; /* Tailwind Blue-600 */
+            --warning-red: #ef4444;
+            --border-color: #383838;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-light);
+            margin: 0;
+            padding: 20px;
+        }
+
+        /* Main Layout */
+       .container {
+            display: flex;
+            gap: 20px;
+            max-width: 1400px;
+            margin: auto;
+        }
+
+       .tweak-grid {
+            flex: 2;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+        }
+
+       .preview-panel {
+            flex: 1;
+            position: sticky;
+            top: 20px;
+            height: fit-content;
+            background-color: var(--card-dark);
+            border-radius: 8px;
+            padding: 20px;
+            border: 1px solid var(--border-color);
+        }
+
+        /* Tweak Card Styles */
+       .tweak-card {
+            background-color: var(--card-dark);
+            border-radius: 8px;
+            padding: 15px;
+            border: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            min-height: 120px;
+            transition: all 0.2s;
+        }
+
+       .tweak-card:hover {
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 10px rgba(37, 99, 235, 0.2);
+        }
+
+       .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+       .card-title {
+            font-size: 1.1em;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+        }
+
+       .card-title i {
+            color: var(--accent-blue);
+            margin-right: 8px;
+            font-style: normal; /* Placeholder for icon */
+        }
+
+       .description {
+            color: var(--text-secondary);
+            font-size: 0.9em;
+            line-height: 1.4;
+            margin-bottom: 5px;
+        }
+
+       .warning-text {
+            color: var(--warning-red);
+            font-size: 0.8em;
+            margin-top: 5px;
+        }
+
+        /* Toggle Switch - iOS Style */
+       .switch {
+            position: relative;
+            display: inline-block;
+            width: 44px; /* iOS width */
+            height: 24px; /* iOS height */
+        }
+
+       .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+       .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #4a4a4a; /* Darker grey for off state */
+            transition: 0.4s;
+            border-radius: 34px; /* Fully rounded */
+        }
+
+       .slider:before {
+            position: absolute;
+            content: "";
+            height: 20px; /* Knob size */
+            width: 20px;  /* Knob size */
+            left: 2px;
+            bottom: 2px;
+            background-color: white;
+            transition: 0.4s;
+            border-radius: 50%;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+        }
+
+        input:checked +.slider {
+            background-image: linear-gradient(to right, var(--accent-blue), #60a5fa);
+        }
+
+        input:checked +.slider:before {
+            transform: translateX(20px); /* This remains the same */
+        }
+        
+        /* Code Preview Styles */
+       .preview-panel h3 {
+            margin-top: 0;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 10px;
+            font-size: 1.2em;
+        }
+
+       .code-container {
+            background-color: #000000;
+            padding: 15px;
+            border-radius: 6px;
+            overflow-x: auto;
+            white-space: pre;
+            font-family: 'Consolas', 'Courier New', monospace;
+            font-size: 0.85em;
+            height: 400px;
+            resize: vertical;
+        }
+
+        /* Placeholder for Syntax Highlighting */
+       .code-container.comment { color: #6a9955; }
+       .code-container.keyword { color: #569cd6; }
+       .code-container.function { color: #dcdcaa; }
+       .code-container.string { color: #ce9178; }
+       .code-container.variable { color: #9cdcfe; }
+       .code-container.info-text { color: #f8c555; }
+       .code-container.diff-added { background-color: rgba(76, 175, 80, 0.2); }
+
+        /* Scrollbar Styles */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--card-dark);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--accent-blue);
+            border-radius: 5px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #1d4ed8; /* Darker blue */
+        }
+    </style>
+</head>
+<body>
+
+<div id="root"></div>
+<script src="https://unpkg.com/react@17/umd/react.development.js"></script>
+<script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<script src="tweaks.js"></script>
+<script type="text/babel" src="SyntaxHighlighter.js"></script>
+<script type="text/babel" src="App.js"></script>
+<script type="text/babel">
+    ReactDOM.render(<App />, document.getElementById('root'));
+</script>
+</body>
+</html>
