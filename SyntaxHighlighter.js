@@ -8,7 +8,7 @@ const SyntaxHighlighter = ({ code, className = '' }) => {
         const tokens = {
             comment: /^(?:#.*$)/,
             string: /^(?:"[^"\\]*(?:\\.[^"\\]*)*")/,
-            keyword: /^\b(?:Set-ItemProperty|Disable-MMAgent|reg|add|Set-Service|Remove-ItemProperty|Remove-Item|Get-ItemProperty|Get-ChildItem|ForEach-Object)\b/i,
+            keyword: /^\b(?:Set-ItemProperty|Disable-MMAgent|reg|add|Set-Service|Remove-ItemProperty|Remove-Item|Get-ItemProperty|Get-ChildItem|ForEach-Object|if|echo|pause|)\b/i,
             parameter: /^(?:-[A-Za-z0-9]+(?:[:])?)\b/,
             variable: /^(?:\$(true|false|null))\b/i,
         };

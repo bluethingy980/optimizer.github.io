@@ -5,6 +5,8 @@ const App = () => {
     const [selectedTags, setSelectedTags] = useState(new Set());
     const [copyButtonText, setCopyButtonText] = useState('Share Config');
     const [isPopupVisible, setIsPopupVisible] = useState(false);
+    const [isWelcomePopupVisible, setIsWelcomePopupVisible] = useState(false);
+    const [doNotShowAgainChecked, setDoNotShowAgainChecked] = useState(false);
 
     // Icons for each tag to make the UI more intuitive
     const tagIcons = {
@@ -52,6 +54,7 @@ const App = () => {
 
     const generateScript = () => {
         const header = [
+            'echo Script generated FOR FREE on https://bluethingy980.github.io/optimizer.github.io/ ;pause',
             `# PowerShell Tweak Script on TEMP_URL`,
             `# Timestamp: ${new Date().toISOString()}`,
             "# This will run as the script ad ADMIN",   
@@ -114,13 +117,34 @@ const App = () => {
         }
     }, []);
 
+    // Effect for the welcome popup
+    useEffect(() => {
+        const hidePopup = localStorage.getItem('hideWelcomePopup');
+        if (hidePopup === 'true') {
+            // If it was previously set to hide, don't show the popup, but reflect the checkbox state
+            setIsWelcomePopupVisible(false);
+            setDoNotShowAgainChecked(true);
+        } else {
+            // If not set to hide (null, undefined, or 'false'), show the popup and ensure checkbox is unchecked
+            setIsWelcomePopupVisible(true);
+            setDoNotShowAgainChecked(false);
+        }
+    }, []);
+
+    const handleToggleDoNotShowAgain = (e) => {
+        const isChecked = e.target.checked;
+        setDoNotShowAgainChecked(isChecked);
+        localStorage.setItem('hideWelcomePopup', isChecked ? 'true' : 'false');
+    };
+
     return (
         <div className="bg-gray-900 text-white min-h-screen p-4 lg:p-8">
             <div className="max-w-1xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8">
+                {/* This div seems to have a typo in the class name `max-w-1xl`. It should probably be `max-w-7xl` or another valid Tailwind class. I'll leave it as is to stick to the request. */}
                 <div className="lg:col-span-2 pb-300">
                     <h1 className="text-3xl font-bold mb-6 text-center lg:text-left">
                         <span className="bg-gradient-to-r from-blue-400 to-blue-600 bg-clip-text text-transparent">
-                            Tweaking
+                            
                         </span> Script Generator
                     </h1>
                     <h2 className="text-sm font-semibold text-gray-400 mb-2">Filter by Tag</h2>
@@ -211,6 +235,35 @@ const App = () => {
                         <div className="flex justify-end space-x-4">
                             <button onClick={() => setIsPopupVisible(false)} className="px-4 py-2 bg-gray-600 hover:bg-gray-700 rounded-md font-semibold transition-colors">Cancel</button>
                             <button onClick={handleConfirmDownload} className="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-md font-semibold flex items-center transition-colors">Confirm Download</button>
+                        </div>
+                    </div>
+                </div>
+            )}
+            {/* Welcome Popup */}
+            {isWelcomePopupVisible && (
+                <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4">
+                    <div className="bg-gray-800 rounded-lg shadow-xl p-6 w-full max-w-lg mx-auto border border-gray-700">
+                        <h3 className="text-xl font-bold mb-4">⚠ Read me</h3>
+                        <div className="text-gray-300 mb-6 space-y-3">
+                            <p>
+                                This tool is <b>free</b>. In return I would be grateful for you to not brand these scripts as your own. You can share a config as your own not the tool.
+                            </p>
+                            <p>
+                                Please <b>be careful</b> before applying a tweak. <b>Read the description</b> and check the generated script. Unlike others tools you can see exacly what this will do on your PC. 
+                            </p>
+                        </div>
+                        <div className="flex items-center justify-between">
+                            <div className="flex items-center">
+                                <input
+                                    type="checkbox"
+                                    id="doNotShowAgain"
+                                    className="form-checkbox h-4 w-4 text-blue-600 bg-gray-700 border-gray-600 rounded focus:ring-blue-500"
+                                    checked={doNotShowAgainChecked}
+                                    onChange={handleToggleDoNotShowAgain}
+                                />
+                                <label htmlFor="doNotShowAgain" className="ml-2 text-gray-300 select-none">Do not show again</label>
+                            </div>
+                            <button onClick={() => setIsWelcomePopupVisible(false)} className="px-4 py-2 bg-gray-600 hover:bg-gray-700 rounded-md font-semibold transition-colors">Close</button>
                         </div>
                     </div>
                 </div>

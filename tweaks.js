@@ -157,5 +157,67 @@ ipconfig /flushdns`,
             "network"
         ],
         "performance_level": null
+    },
+    {
+        "id": "disable-vbs-and-memory-integrity",
+        "title": "Disable VBS and Memory Integrity",
+        "description": "Virtualization-Based Security and Memory Integrity can use a lot of memory and CPU cycles. But this will impact your system security ",
+        "warning": "This can be  a security risk",
+        "code_apply": `# Disable Virtualization-Based Security (VBS) features
+Set-ItemProperty -Path "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\DeviceGuard" -Name "EnableVirtualizationBasedSecurity" -Value 0 -Type DWORD
+Set-ItemProperty -Path "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\DeviceGuard" -Name "RequirePlatformSecurityFeatures" -Value 0 -Type DWORD
+
+# Disable Hypervisor-Enforced Code Integrity (HVCI/Memory Integrity)
+Set-ItemProperty -Path "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\DeviceGuard\\Scenarios\\HypervisorEnforcedCodeIntegrity" -Name "Enabled" -Value 0 -Type DWORD -Force`,
+        "source_url": null,
+        "tags": [
+            "performance"
+        ],
+        "performance_level": 3
+    },
+    {
+        "id": "enable-bbrv2-",
+        "title": "Enable BBRV2 ",
+        "description": "BBRv2 Congestion control can give mesurable network speed increase. More info on the neat blog post in the source button",
+        "warning": "Could be buggy on Windows 11 23H2 / 24H2+ ",
+        "code_apply": `netsh int tcp set supplemental Template=Internet CongestionProvider=bbr2
+netsh int tcp set supplemental Template=Datacenter CongestionProvider=bbr2
+netsh int tcp set supplemental Template=Compat CongestionProvider=bbr2
+netsh int tcp set supplemental Template=DatacenterCustom CongestionProvider=bbr2
+netsh int tcp set supplemental Template=InternetCustom CongestionProvider=bbr2
+netsh int ipv6 set gl loopbacklargemtu=disable
+netsh int ipv4 set gl loopbacklargemtu=disable`,
+        "source_url": "https://dev.moe/en/3021",
+        "tags": [
+            "network"
+        ],
+        "performance_level": null
+    },
+    {
+        "id": "disable-accessibility-shortcuts",
+        "title": "Disable accessibility shortcuts",
+        "description": "Disable all accessibility shortcuts",
+        "warning": null,
+        "code_apply": `Set-ItemProperty -Path "HKCU:\\Control Panel\\Accessibility\\StickyKeys" -Name "Flags" -Type String -Value "506"
+Set-ItemProperty -Path "HKCU:\\Control Panel\\Accessibility\\ToggleKeys" -Name "Flags" -Type String -Value "58"
+Set-ItemProperty -Path "HKCU:\\Control Panel\\Accessibility\\Keyboard Response" -Name "Flags" -Type String -Value "122"`,
+        "source_url": null,
+        "tags": [
+            "fix"
+        ],
+        "performance_level": null
+    },
+    {
+        "id": "disable-spectre-and-meltdown-mitigation",
+        "title": "Disable Spectre and Meltdown mitigation",
+        "description": "Disable Spectre and Meltdown mitigation. This can improve performance at the cost of security.",
+        "warning": "This can be a security risk",
+        "code_apply": `reg add "HKLM\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Memory Management" /v "FeatureSettingsOverride" /t REG_DWORD /d "3" /f
+reg add "HKLM\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Memory Management" /v "FeatureSettingsOverrideMask" /t REG_DWORD /d "3" /f`,
+        "source_url": null,
+        "tags": [
+            "performance"
+        ],
+        "performance_level": 2
     }
 ];
